@@ -15,4 +15,4 @@ One of the great things about Jekyll is that you can use it to create a blog tha
 Let's start with a simple **Matplotlib** plot. Below, we’ve generated and saved a plot showing a basic trend line.  
 
 ### **Python Code to Generate the Plot**
-![assets/images/matplotlib_plot.png](../assets/images/matplotlib_plot.png)
+![Sample Matplotlib Plot](/assets/images/matplotlib_plot.png)
