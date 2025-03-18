@@ -1,29 +1,43 @@
 ---
 layout: post
-title:  "Welcome to Jekyll!"
-date:   2025-03-18 10:33:09 +0100
-categories: jekyll update
+title: "Visualizing Data with Jekyll"
+date: 2025-03-18 10:33:09 +0100
+categories: data visualization
 ---
-You’ll find this post in your `_posts` directory. Go ahead and edit it and re-build the site to see your changes. You can rebuild the site in many different ways, but the most common way is to run `jekyll serve`, which launches a web server and auto-regenerates your site when a file is updated.
 
-Jekyll requires blog post files to be named according to the following format:
+# **Visualizing Data with Jekyll** 📊  
 
-`YEAR-MONTH-DAY-title.MARKUP`
+One of the great things about Jekyll is that you can use it to create a blog that showcases **data visualizations**! Today, we’ll walk through embedding both **static** and **interactive** plots into a Jekyll post.  
 
-Where `YEAR` is a four-digit number, `MONTH` and `DAY` are both two-digit numbers, and `MARKUP` is the file extension representing the format used in the file. After that, include the necessary front matter. Take a look at the source for this post to get an idea about how it works.
+---
 
-Jekyll also offers powerful support for code snippets:
+## **📌 Adding a Static Plot (Matplotlib)**  
 
-{% highlight ruby %}
-def print_hi(name)
-  puts "Hi, #{name}"
-end
-print_hi('Tom')
-#=> prints 'Hi, Tom' to STDOUT.
-{% endhighlight %}
+Let's start with a simple **Matplotlib** plot. Below, we’ve generated and saved a plot showing a basic trend line.  
 
-Check out the [Jekyll docs][jekyll-docs] for more info on how to get the most out of Jekyll. File all bugs/feature requests at [Jekyll’s GitHub repo][jekyll-gh]. If you have questions, you can ask them on [Jekyll Talk][jekyll-talk].
+### **Python Code to Generate the Plot**
+To create this plot, run the following Python script in your local environment:  
 
-[jekyll-docs]: https://jekyllrb.com/docs/home
-[jekyll-gh]:   https://github.com/jekyll/jekyll
-[jekyll-talk]: https://talk.jekyllrb.com/
+```python
+import matplotlib.pyplot as plt
+
+# Sample data
+x = [1, 2, 3, 4, 5]
+y = [10, 20, 30, 40, 50]
+
+# Create the plot
+plt.figure(figsize=(6,4))
+plt.plot(x, y, marker="o", linestyle="-", color="blue", label="Trend Line")
+plt.xlabel("X-axis")
+plt.ylabel("Y-axis")
+plt.title("Sample Matplotlib Plot")
+plt.legend()
+plt.grid(True)
+
+# Save the plot in your Jekyll assets folder
+plt.savefig("assets/images/matplotlib_plot.png")
+plt.show()
+```
+
+### **Testing*
+Test
