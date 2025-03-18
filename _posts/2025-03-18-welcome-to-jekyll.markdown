@@ -16,3 +16,6 @@ Let's start with a simple **Matplotlib** plot. Below, we’ve generated and save
 
 ### **Python Code to Generate the Plot**
 ![Sample Matplotlib Plot](/assets/images/matplotlib_plot.png)
+
+### **HTML interactive plot**
+<iframe src="/assets/plots/sf_crime_hourly_distribution.html" width="125%" height="500px"></iframe>
