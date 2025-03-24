@@ -1,5 +1,5 @@
 ---
-layout: post
+layout: home
 title: "The Rhythm of Crime: Temporal Patterns in San Francisco"
 date: 2025-03-24 10:00:00 +0100
 categories: data visualization
