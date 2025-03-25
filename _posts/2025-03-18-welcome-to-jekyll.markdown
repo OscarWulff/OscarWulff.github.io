@@ -16,7 +16,7 @@ categories: data visualization crime
 
 ## Temporal Dynamics: An Interactive Exploration
 
-<iframe src="/assets/plots/sf_crime_hourly_distribution.html" width="100%" height="500px"></iframe>
+<iframe src="/assets/plots/sf_crime_hourly_distribution.html" width="125%" height="500px"></iframe>
 
 ## Emerging Insights
 
