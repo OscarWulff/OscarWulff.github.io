@@ -21,7 +21,7 @@ focuscrimes = ['VEHICLE BREAK-IN', 'ROBBERY', 'ASSAULT', 'DRUG/NARCOTIC', 'BICYC
 # ----------------------------------------------------------
 # Data Loading and Preprocessing
 # ----------------------------------------------------------
-# Load historical data (update file paths as needed)
+# Load historical data 
 IRH_first = pd.read_csv('python_code/data/Police_Department_Incident_Reports__Historical_2003_to_May_2018.csv')
 IRH_second = pd.read_csv('python_code/data/Police_Department_Incident_Reports__2018_to_Present_20250204.csv')
 
@@ -34,13 +34,18 @@ merged_column_names = ['Category', 'DayOfWeek', 'Date', 'Time', 'District', 'Poi
 IRH_first.columns = merged_column_names
 IRH_second.columns = merged_column_names
 
-# Standardize string case in IRH_second for consistency
+# Standardize string case for consistency
+IRH_first['Category'] = IRH_first['Category'].str.upper()
+IRH_first['District'] = IRH_first['District'].str.upper()
 IRH_second['Category'] = IRH_second['Category'].str.upper()
 IRH_second['District'] = IRH_second['District'].str.upper()
 
 # Convert Date columns to datetime objects
 IRH_first['Date'] = pd.to_datetime(IRH_first['Date'])
 IRH_second['Date'] = pd.to_datetime(IRH_second['Date'])
+
+# Remove overlap and keep only data after May 2018 from IRH_second
+IRH_second = IRH_second[IRH_second['Date'] > pd.to_datetime('2018-05-31')]
 
 # Make consistent category mapping
 category_mapping = {
@@ -88,9 +93,17 @@ IRH_all = IRH_all[
 IRH_all['Year'] = IRH_all['Date'].dt.year
 IRH_all['Month'] = IRH_all['Date'].dt.month
 IRH_all['Day'] = IRH_all['Date'].dt.day
-IRH_all['Hours'] = IRH_all['Time'].str[:2].astype(int)
-IRH_all['Minutes'] = IRH_all['Time'].str[3:5].astype(int)
-IRH_all['HoursSinceMidnight'] = IRH_all['Hours'] + IRH_all['Minutes'] / 60
+
+# Handle potential errors in Time column
+def safe_time_parse(time_str):
+    try:
+        hours = int(time_str[:2])
+        minutes = int(time_str[3:5])
+        return hours + minutes / 60
+    except:
+        return np.nan
+
+IRH_all['HoursSinceMidnight'] = IRH_all['Time'].apply(safe_time_parse)
 
 # Filter for focus crimes (or change focus crimes if desired)
 focus_data = IRH_all[IRH_all['Category'].isin(focuscrimes)]
@@ -189,7 +202,6 @@ sf_map.get_root().html.add_child(folium.Element(title_html))
 sf_map.save('assets/plots/sf_crime_heatmap.html')
 print("Crime heatmap created!")
 
-
 # ----------------------------------------------------------
 # VISUALIZATION 3: Hourly Crime Distribution (Bokeh Interactive)
 # ----------------------------------------------------------
@@ -198,7 +210,7 @@ hour_data = {'Hours': [str(h) for h in range(24)]}
 for crime in focuscrimes:
     crime_data = IRH_all[IRH_all['Category'] == crime]
     # Group by integer hour from HoursSinceMidnight
-    crime_hours = crime_data['HoursSinceMidnight'].apply(lambda x: int(x) if not pd.isna(x) else None)
+    crime_hours = crime_data['HoursSinceMidnight'].dropna().apply(int)
     hour_counts = crime_hours.value_counts().sort_index()
     # Normalize counts
     hour_normalized = hour_counts / hour_counts.sum()
