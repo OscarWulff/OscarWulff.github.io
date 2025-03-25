@@ -4,12 +4,7 @@ title: "Urban Pulses: Decoding San Francisco's Crime Rhythms"
 date: 2025-03-25
 categories: data visualization crime
 ---
-
-# Urban Pulses: Decoding San Francisco's Crime Rhythms
-
 ## Introduction: Reading the City's Hidden Patterns
-
-[Placeholder for introductory image/visualization]
 
 ## The Daily Ebb and Flow of Urban Safety
 
