@@ -16,8 +16,7 @@ San Francisco's crime data from 2003 to 2024 offers a window into the city's shi
 
 The time series analysis of 10 key crime categories wherre we have the highest number of that crime done in the corresponding year and also the lowest year. Moreover we have also both the Total incidents and then also the percentages of total crimes. We can see multiple patterns and interesting things based on this plot for our focus crimes.
 - **Different Crime Categories, Different Patterns**  
-  While some crimes, like weapon laws, are pretty steady with some shifts, others, such as prostitution, rise and fall sharply due to social factors and changes in time. (reference)  
-
+  While some crimes, like weapon laws, are pretty steady with some shifts, others, such as prostitution, rise and fall a lot due to social factors and changes in time.
 - **Crime Numbers and % of total crimes**  
   The total number of crimes can be misleading without context. **Assault**, for example, have very stable counts of incidents but % of all crimes still fluctates a bit. Which also gives an interesting view of both how many incidents there are and how much they constitute to the total amount of crimes throughout all the 10 focus crimes.
 
@@ -59,4 +58,5 @@ Missing
 **Further reading:**  
 
 **References:**  
-
+1. San Francisco Police Department. (n.d.). *Police Department Incident Reports: Historical 2003 to May 2018*. Retrieved from https://data.sfgov.org/Public-Safety/Police-Department-Incident-Reports-Historical-2003/tmnf-yvry/about_data  
+2. San Francisco Police Department. (n.d.). *Police Department Incident Reports: 2018 to Present*. Retrieved from https://data.sfgov.org/Public-Safety/Police-Department-Incident-Reports-2018-to-Present/wg3w-h783/about_data
