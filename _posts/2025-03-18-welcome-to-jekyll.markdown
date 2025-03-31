@@ -1,6 +1,6 @@
 ---
 layout: post
-title: "Tracking Crime in San Francisco: Two Key Patterns"
+title: "Crime Trends and Stolen Property in San Francisco"
 date: 2025-03-31 10:33:09 +0100
 categories: data-story
 ---
