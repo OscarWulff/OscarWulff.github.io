@@ -1,7 +1,7 @@
 ---
 layout: post
 title: "Tracking Crime in San Francisco: Two Key Patterns"
-date: 2025-03-18 10:33:09 +0100
+date: 2025-03-31 10:33:09 +0100
 categories: data-story
 ---
 
