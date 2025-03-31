@@ -49,8 +49,8 @@ The line plot above visualizes the annual trend in vehicle theft incidents from 
 Our website provides an analysis of the spatial and temporal patterns of vehicle theft in the San Fransisco area during the period from 2003 to 2024. Through the three visualizations we have illustrated and interpreted the data from the San Fransisco Police Department [4][5], extracting insights into trends of vehicle theft.
 
 **References:**  
-1. Breitler, A. 2007. *Vehicle thefts dropped in 2006*. The Record. https://eu.recordnet.com/story/news/crime/2007/04/25/vehicle-thefts-dropped-in-2006/52914690007/
-2. Florida & Johnson, R & S. 04-01-2013. *Class-Divided Cities: San Francisco Edition*. Bloomberg. https://www.bloomberg.com/news/articles/2013-04-01/class-divided-cities-san-francisco-edition
-3. Bindman, A. 12-24-2023. *San Francisco car thieves exposed, humiliated by 'glitter bombs'*. SFGATE. https://www.sfgate.com/local/article/glitter-bomb-san-francisco-car-break-ins-18549602.php
+1. Breitler, A. 2007. *Vehicle thefts dropped in 2006*. The Record. Retrieved from https://eu.recordnet.com/story/news/crime/2007/04/25/vehicle-thefts-dropped-in-2006/52914690007/
+2. Florida & Johnson, R & S. 04-01-2013. *Class-Divided Cities: San Francisco Edition*. Bloomberg. Retrieved from https://www.bloomberg.com/news/articles/2013-04-01/class-divided-cities-san-francisco-edition
+3. Bindman, A. 12-24-2023. *San Francisco car thieves exposed, humiliated by 'glitter bombs'*. SFGATE. Retrieved from https://www.sfgate.com/local/article/glitter-bomb-san-francisco-car-break-ins-18549602.php
 4. San Francisco Police Department. (n.d.). *Police Department Incident Reports: Historical 2003 to May 2018*. Retrieved from https://data.sfgov.org/Public-Safety/Police-Department-Incident-Reports-Historical-2003/tmnf-yvry/about_data  
 5. San Francisco Police Department. (n.d.). *Police Department Incident Reports: 2018 to Present*. Retrieved from https://data.sfgov.org/Public-Safety/Police-Department-Incident-Reports-2018-to-Present/wg3w-h783/about_data
