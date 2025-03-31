@@ -13,11 +13,14 @@ from bokeh import layouts
 from datetime import datetime
 from folium.plugins import HeatMapWithTime
 
-# Set global plot styles
-plt.style.use('seaborn-v0_8')
+# Set global plot styles to light mode
+plt.style.use('seaborn-v0_8-white')  # Changed to white background style
+sns.set_style("whitegrid")  # Changed to white grid
 sns.set_context("talk")
 plt.rcParams['figure.figsize'] = (12, 8)
 plt.rcParams['font.family'] = 'sans-serif'
+plt.rcParams['axes.facecolor'] = 'white'  # Ensure axes background is white
+plt.rcParams['figure.facecolor'] = 'white'  # Ensure figure background is white
 
 # Define focus crime categories
 focuscrimes = ['WEAPON LAWS', 'PROSTITUTION', 'ROBBERY', 'BURGLARY', 'ASSAULT', 'DRUG/NARCOTIC', 'LARCENY/THEFT', 'VANDALISM', 'VEHICLE THEFT', 'STOLEN PROPERTY']
@@ -84,10 +87,10 @@ axes = [fig.add_subplot(gs[i]) for i in range(len(focuscrimes))]
 
 # Add main title with increased spacing
 fig.suptitle('Trends in Key Crime Categories in San Francisco (2003-2024)', 
-             fontsize=20, y=0.95)  # Increased y position
+             fontsize=20, y=0.95, color='black')  # Changed text color to black
 
-# Define a custom color palette
-colors = plt.cm.viridis(np.linspace(0, 1, len(focuscrimes)))
+# Define a custom color palette (using more vibrant colors for light background)
+colors = plt.cm.tab20(np.linspace(0, 1, len(focuscrimes)))
 
 # Create line plots for each crime category
 for i, crime in enumerate(focuscrimes):
@@ -102,25 +105,31 @@ for i, crime in enumerate(focuscrimes):
     # Add percentage line on secondary axis
     ax2 = ax.twinx()
     percent_line = ax2.plot(crime_data['Year'], crime_data['Percentage'], marker='s', 
-                      linewidth=1.5, linestyle='--', color='#FF5733', 
+                      linewidth=1.5, linestyle='--', color='red',  # Changed to red for better visibility
                       label='% of All Crimes')
     
     # Set y-axis labels and colors
-    ax.set_ylabel('Incidents', fontsize=11)
-    ax2.set_ylabel('% of All Crimes', color='#FF5733', fontsize=11)
-    ax2.tick_params(axis='y', colors='#FF5733')
+    ax.set_ylabel('Incidents', fontsize=11, color='black')
+    ax2.set_ylabel('% of All Crimes', color='red', fontsize=11)
+    ax2.tick_params(axis='y', colors='red')
     ax2.set_ylim(bottom=0)
+    
+    # Set axis colors to black for better visibility
+    ax.tick_params(axis='x', colors='black')
+    ax.tick_params(axis='y', colors='black')
+    ax.spines['bottom'].set_color('black')
+    ax.spines['left'].set_color('black')
     
     # Combine legends
     lines = line + percent_line
     labels = [l.get_label() for l in lines]
-    ax.legend(lines, labels, loc='upper right', fontsize=9, bbox_to_anchor=(1, 1))
+    ax.legend(lines, labels, loc='upper right', fontsize=9, bbox_to_anchor=(1, 1), 
+              facecolor='white', edgecolor='black')  # Added white background to legend
     
     # Add title
-    ax.set_title(f'{crime}', fontsize=14, pad=15)  # Increased padding
-    ax.grid(True, alpha=0.3)
+    ax.set_title(f'{crime}', fontsize=14, pad=15, color='black')  # Changed text color to black
+    ax.grid(True, alpha=0.3, color='gray')  # Changed grid color
     
-    # Find and annotate peaks and valleys
     # Find and annotate peaks and valleys
     if len(crime_data) > 5:
         peak_year = crime_data.loc[crime_data['Count'].idxmax()]
@@ -134,9 +143,10 @@ for i, crime in enumerate(focuscrimes):
                        textcoords="offset points",
                        fontsize=9,
                        ha='left',
-                       arrowprops=dict(arrowstyle="->", color='black', alpha=0.6, 
-                                     connectionstyle="arc3,rad=-0.2"),  # Changed arc direction
-                       bbox=dict(boxstyle="round,pad=0.3", fc="white", ec="gray", alpha=0.7))
+                       color='black',  # Changed text color
+                       arrowprops=dict(arrowstyle="->", color='black', alpha=0.8,  # Darker arrow
+                                     connectionstyle="arc3,rad=-0.2"),
+                       bbox=dict(boxstyle="round,pad=0.3", fc="white", ec="black", alpha=0.9))  # White background
         else:
             ax.annotate(f"High: {int(peak_year['Count'])}",
                        xy=(peak_year['Year'], peak_year['Count']),
@@ -144,35 +154,38 @@ for i, crime in enumerate(focuscrimes):
                        textcoords="offset points",
                        fontsize=9,
                        ha='left',
-                       arrowprops=dict(arrowstyle="->", color='black', alpha=0.6, 
+                       color='black',  # Changed text color
+                       arrowprops=dict(arrowstyle="->", color='black', alpha=0.8,  # Darker arrow
                                      connectionstyle="arc3,rad=0.2"),
-                       bbox=dict(boxstyle="round,pad=0.3", fc="white", ec="gray", alpha=0.7))
+                       bbox=dict(boxstyle="round,pad=0.3", fc="white", ec="black", alpha=0.9))  # White background
         
-        # Valley annotation remains the same
+        # Valley annotation
         ax.annotate(f"Low: {int(valley_year['Count'])}",
                    xy=(valley_year['Year'], valley_year['Count']),
                    xytext=(-15, -25),
                    textcoords="offset points",
                    fontsize=9,
                    ha='right',
-                   arrowprops=dict(arrowstyle="->", color='black', alpha=0.6, 
+                   color='black',  # Changed text color
+                   arrowprops=dict(arrowstyle="->", color='black', alpha=0.8,  # Darker arrow
                                  connectionstyle="arc3,rad=-0.2"),
-                   bbox=dict(boxstyle="round,pad=0.3", fc="white", ec="gray", alpha=0.7))
+                   bbox=dict(boxstyle="round,pad=0.3", fc="white", ec="black", alpha=0.9))  # White background
 
 # Set x-axis ticks and labels
 for ax in axes:
     ax.set_xticks(sorted(yearly_focus_crimes['Year'].unique())[::2])
     ax.set_xlabel("")
+    ax.tick_params(axis='x', colors='black')  # Ensure x-axis ticks are black
 
 # Add common x-axis label
-fig.text(0.5, 0.02, 'Year', ha='center', fontsize=14)
+fig.text(0.5, 0.02, 'Year', ha='center', fontsize=14, color='black')
 
 # Adjust layout
 plt.tight_layout()
 fig.subplots_adjust(top=0.92)  # Adjust top margin
 
 # Save the figure
-plt.savefig('improved_crime_trends.png', dpi=300, bbox_inches='tight')
+plt.savefig('improved_crime_trends_light.png', dpi=300, bbox_inches='tight', facecolor='white')
 plt.close()
 
 # Focus specifically on stolen property data instead of vehicle theft
@@ -200,45 +213,46 @@ vehicle_theft_data = vehicle_theft_data[valid_coords]
 vehicle_theft_data.loc[:,'Latitude'] = vehicle_theft_data['Latitude'].astype(float)
 vehicle_theft_data.loc[:,'Longitude'] = vehicle_theft_data['Longitude'].astype(float)
 
-# Update the base map settings
+# Update the base map settings to light mode
 stolen_property_map = folium.Map(
     location=[37.7749, -122.4194],
     zoom_start=12,
-    tiles='CartoDB dark_matter',
+    tiles='CartoDB positron',  # Changed to light mode tiles
     control_scale=True
 )
 
-# Update the title
+# Update the title with dark text
 title_html = '''
 <div style="position: fixed; 
             top: 10px; left: 50%; transform: translateX(-50%);
             z-index: 9999; font-size: 18px; font-weight: bold;
-            background-color: rgba(0, 0, 0, 0.7); color: white; 
+            background-color: rgba(255, 255, 255, 0.9); color: black; 
             border-radius: 5px; padding: 10px; text-align: center;
-            width: 400px;">
+            width: 400px; border: 1px solid black;">
     Vehicle Theft Incidents in San Francisco (2003-2024)
 </div>
 '''
 stolen_property_map.get_root().html.add_child(folium.Element(title_html))
 
-# Update the legend
+# Update the legend with dark text
 legend_html = '''
 <div style="position: fixed; 
             bottom: 50px; right: 50px;
             z-index: 9999; font-size: 14px;
-            background-color: rgba(0, 0, 0, 0.7); color: white; 
-            border-radius: 5px; padding: 10px; text-align: left;">
+            background-color: rgba(255, 255, 255, 0.9); color: black; 
+            border-radius: 5px; padding: 10px; text-align: left;
+            border: 1px solid black;">
     <div style="margin-bottom: 5px;"><strong>Vehicle Theft Incidents</strong></div>
     <div style="display: flex; align-items: center; margin-bottom: 5px;">
-        <div style="background: rgba(255, 0, 0, 0.8); width: 20px; height: 20px; margin-right: 5px;"></div>
+        <div style="background: rgba(255, 0, 0, 0.8); width: 20px; height: 20px; margin-right: 5px; border: 1px solid black;"></div>
         <span>High Concentration</span>
     </div>
     <div style="display: flex; align-items: center; margin-bottom: 5px;">
-        <div style="background: rgba(255, 255, 0, 0.8); width: 20px; height: 20px; margin-right: 5px;"></div>
+        <div style="background: rgba(255, 255, 0, 0.8); width: 20px; height: 20px; margin-right: 5px; border: 1px solid black;"></div>
         <span>Medium Concentration</span>
     </div>
     <div style="display: flex; align-items: center;">
-        <div style="background: rgba(0, 0, 255, 0.8); width: 20px; height: 20px; margin-right: 5px;"></div>
+        <div style="background: rgba(0, 0, 255, 0.8); width: 20px; height: 20px; margin-right: 5px; border: 1px solid black;"></div>
         <span>Low Concentration</span>
     </div>
 </div>
@@ -279,12 +293,12 @@ for year in years:
     year_count = len(vehicle_theft_data[vehicle_theft_data['Year'] == year])
     time_index.append([f"{year} ({year_count} incidents)"])
 
-# Update heatmap parameters
+# Update heatmap parameters (colors remain the same for visibility)
 heatmap_with_time = HeatMapWithTime(
     heat_data,
     index=time_index,
     auto_play=True,
-    max_opacity=0.6,
+    max_opacity=0.8,  # Increased opacity for better visibility on light background
     radius=15,
     gradient={
         0.2: 'blue',
@@ -293,13 +307,13 @@ heatmap_with_time = HeatMapWithTime(
         0.8: 'orange',
         1.0: 'red'
     },
-    min_opacity=0.1,
+    min_opacity=0.3,  # Increased minimum opacity
     use_local_extrema=True
 )
 
 heatmap_with_time.add_to(stolen_property_map)
 
-# Add district markers
+# Add district markers with dark text
 districts = vehicle_theft_data.groupby('District')[['Latitude', 'Longitude']].mean().reset_index()
 
 for _, district in districts.iterrows():
@@ -309,9 +323,9 @@ for _, district in districts.iterrows():
         icon=folium.DivIcon(
             icon_size=(150, 36),
             icon_anchor=(75, 18),
-            html=f'<div style="font-size: 12pt; color: white; background-color: rgba(0, 0, 0, 0.6); padding: 5px; border-radius: 3px;">{district["District"]}</div>'
+            html=f'<div style="font-size: 12pt; color: black; background-color: rgba(255, 255, 255, 0.8); padding: 5px; border-radius: 3px; border: 1px solid black;">{district["District"]}</div>'
         )
     ).add_to(stolen_property_map)
 
 # Save the map
-stolen_property_map.save('sf_stolen_property_animation.html')
+stolen_property_map.save('sf_stolen_property_animation_light.html')
