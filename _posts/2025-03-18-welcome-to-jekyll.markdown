@@ -1,25 +1,38 @@
 ---
-layout: home
-title: "Urban Pulses: Decoding San Francisco's Crime Rhythms"
-date: 2025-03-25
-categories: data visualization crime
+layout: post
+title: "San Francisco Crime Trends: A Decade of Data"
+date: 2025-03-18 10:33:09 +0100
+categories: data-story
 ---
-## Introduction: Reading the City's Hidden Patterns
 
-## The Daily Ebb and Flow of Urban Safety
+## Introduction  
+San Francisco, a city known for its... [Brief intro to SF and why crime analysis matters].  
+*Dataset*: Police Department Incident Reports (2003-2024) containing... [1-2 sentences about the data].
 
-![Daily Crime Distribution](/assets/images/sf_crime_time_distribution.png)
+---
 
-## Crime Hotspots: A Geographical Lens
+## Long-Term Crime Trends  
+![crimeoveryears](/assets/images/improved_crime_trends.png)
 
-<iframe src="/assets/plots/sf_crime_heatmap.html" width="100%" height="500px"></iframe>
 
-## Temporal Dynamics: An Interactive Exploration
+Analysis shows... [Connect to external sources like "This aligns with SFPD's 2022 report (SFPD, 2022)..."].
 
-<iframe src="/assets/plots/sf_crime_hourly_distribution.html" width="125%" height="500px"></iframe>
+---
 
-## Emerging Insights
+## Spatial Patterns in Vehicle Thefts  
+<iframe src="/assets/plots/sf_stolen_property_animation.html" width="100%" height="500px"></iframe>  
+The concentration near... [Reference a news article about parking enforcement changes in these areas].
 
-## Methodology and Data Sources
+---
 
-## References
+## When Do Crimes Happen?  
+<iframe src="/assets/plots/sf_crime_interactive_bokeh.html" width="100%" height="500px"></iframe>  
+*Fig 3: Explore hourly patterns by crime type and year (interactive).*
+
+Notable finding: Robberies peak at... [Compare to SF Nightlife Economic Report 2023].
+
+---
+
+## Conclusion  
+Key takeaways... [3-4 bullet points].  
+Further reading: [Links to SFPD reports, news articles, etc.].

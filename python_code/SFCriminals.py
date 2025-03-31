@@ -3,275 +3,315 @@ import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
 import folium
-from folium.plugins import HeatMap
-from bokeh.plotting import figure, output_file, save
-from bokeh.models import ColumnDataSource, FactorRange, HoverTool, Label
-import bokeh.palettes as palettes
+from folium import Map
+import contextily as ctx
+from bokeh.io import output_file, save
+from bokeh.palettes import Category10
+from bokeh.transform import factor_cmap
+from bokeh.models import ColumnDataSource, Select, HoverTool
+from bokeh import layouts
 from datetime import datetime
+from folium.plugins import HeatMapWithTime
 
-# Set global plot styles for consistency
+# Set global plot styles
 plt.style.use('seaborn-v0_8')
 sns.set_context("talk")
 plt.rcParams['figure.figsize'] = (12, 8)
 plt.rcParams['font.family'] = 'sans-serif'
 
-# Define the focus crime categories
-focuscrimes = ['VEHICLE BREAK-IN', 'ROBBERY', 'ASSAULT', 'DRUG/NARCOTIC', 'BICYCLE THEFT']
+# Define focus crime categories
+focuscrimes = ['WEAPON LAWS', 'PROSTITUTION', 'ROBBERY', 'BURGLARY', 'ASSAULT', 'DRUG/NARCOTIC', 'LARCENY/THEFT', 'VANDALISM', 'VEHICLE THEFT', 'STOLEN PROPERTY']
 
-# ----------------------------------------------------------
-# Data Loading and Preprocessing
-# ----------------------------------------------------------
-# Load historical data 
+# Load and preprocess data
 IRH_first = pd.read_csv('python_code/data/Police_Department_Incident_Reports__Historical_2003_to_May_2018.csv')
 IRH_second = pd.read_csv('python_code/data/Police_Department_Incident_Reports__2018_to_Present_20250204.csv')
 
-# Select relevant columns for both datasets
 IRH_first = IRH_first[['Category', 'DayOfWeek', 'Date', 'Time', 'PdDistrict', 'location', 'X', 'Y']]
 IRH_second = IRH_second[['Incident Category', 'Incident Day of Week', 'Incident Date', 'Incident Time', 'Police District', 'Point', 'Longitude', 'Latitude']]
 
-# Rename columns to have a consistent naming convention
 merged_column_names = ['Category', 'DayOfWeek', 'Date', 'Time', 'District', 'PointLocation', 'Longitude', 'Latitude']
 IRH_first.columns = merged_column_names
 IRH_second.columns = merged_column_names
 
-# Standardize string case for consistency
 IRH_first['Category'] = IRH_first['Category'].str.upper()
 IRH_first['District'] = IRH_first['District'].str.upper()
 IRH_second['Category'] = IRH_second['Category'].str.upper()
 IRH_second['District'] = IRH_second['District'].str.upper()
 
-# Convert Date columns to datetime objects
 IRH_first['Date'] = pd.to_datetime(IRH_first['Date'])
 IRH_second['Date'] = pd.to_datetime(IRH_second['Date'])
+IRH_second = IRH_second[IRH_second['Date'] > pd.to_datetime('2018-05-15')]
 
-# Remove overlap and keep only data after May 2018 from IRH_second
-IRH_second = IRH_second[IRH_second['Date'] > pd.to_datetime('2018-05-31')]
-
-# Make consistent category mapping
 category_mapping = {
-    'LARCENY THEFT': 'LARCENY/THEFT',
-    'LARCENY/THEFT': 'LARCENY/THEFT',
-    'BURGLARY': 'BURGLARY',
-    'MOTOR VEHICLE THEFT': 'VEHICLE THEFT',
-    'MOTOR VEHICLE THEFT?': 'VEHICLE THEFT',
-    'VEHICLE THEFT': 'VEHICLE THEFT',
-    'DRUG OFFENSE': 'DRUG/NARCOTIC',
-    'DRUG VIOLATION': 'DRUG/NARCOTIC',
-    'DRUG/NARCOTIC': 'DRUG/NARCOTIC',
-    'FORGERY AND COUNTERFEITING': 'FORGERY/COUNTERFEITING',
-    'FORGERY/COUNTERFEITING': 'FORGERY/COUNTERFEITING',
-    'SEX OFFENSES, FORCIBLE': 'SEX OFFENSE',
-    'SEX OFFENSES, NON FORCIBLE': 'SEX OFFENSE',
-    'SEX OFFENSE': 'SEX OFFENSE',
-    'WEAPON LAWS': 'WEAPON LAWS',
-    'WEAPONS CARRYING ETC': 'WEAPON LAWS',
-    'WEAPONS OFFENCE': 'WEAPON LAWS',
-    'WEAPONS OFFENSE': 'WEAPON LAWS',
-    'WARRANT': 'WARRANTS',
-    'WARRANTS': 'WARRANTS',
-    'OTHER': 'OTHER',
-    'OTHER MISCELLANEOUS': 'OTHER',
-    'OTHER OFFENSES': 'OTHER',
+    'LARCENY THEFT': 'LARCENY/THEFT', 'LARCENY/THEFT': 'LARCENY/THEFT', 'BURGLARY': 'BURGLARY',
+    'MOTOR VEHICLE THEFT': 'VEHICLE THEFT', 'MOTOR VEHICLE THEFT?': 'VEHICLE THEFT', 'VEHICLE THEFT': 'VEHICLE THEFT',
+    'DRUG OFFENSE': 'DRUG/NARCOTIC', 'DRUG VIOLATION': 'DRUG/NARCOTIC', 'DRUG/NARCOTIC': 'DRUG/NARCOTIC',
+    'FORGERY AND COUNTERFEITING': 'FORGERY/COUNTERFEITING', 'FORGERY/COUNTERFEITING': 'FORGERY/COUNTERFEITING',
+    'SEX OFFENSES, FORCIBLE': 'SEX OFFENSE', 'SEX OFFENSES, NON FORCIBLE': 'SEX OFFENSE', 'SEX OFFENSE': 'SEX OFFENSE',
+    'WEAPON LAWS': 'WEAPON LAWS', 'WEAPONS CARRYING ETC': 'WEAPON LAWS', 'WEAPONS OFFENCE': 'WEAPON LAWS', 'WEAPONS OFFENSE': 'WEAPON LAWS',
+    'WARRANT': 'WARRANTS', 'WARRANTS': 'WARRANTS', 'OTHER': 'OTHER', 'OTHER MISCELLANEOUS': 'OTHER', 'OTHER OFFENSES': 'OTHER',
     'HUMAN TRAFFICKING, COMMERCIAL SEX ACTS': 'HUMAN TRAFFICKING (A), COMMERCIAL SEX ACTS',
-    'SUSPICIOUS': 'SUSPICIOUS OCC',
-    'MALICIOUS MISCHIEF': 'VANDALISM'
+    'SUSPICIOUS': 'SUSPICIOUS OCC', 'MALICIOUS MISCHIEF': 'VANDALISM'
 }
-
 IRH_first['Category'] = IRH_first['Category'].replace(category_mapping)
 IRH_second['Category'] = IRH_second['Category'].replace(category_mapping)
 
-# Concatenate datasets
 IRH_all = pd.concat([IRH_first, IRH_second])
+IRH_all = IRH_all[(IRH_all['Date'] >= pd.to_datetime('2003-01-01')) & (IRH_all['Date'] <= pd.to_datetime('2024-12-31'))]
 
-# Use only full years from 2014 to 2024
-IRH_all = IRH_all[
-    (IRH_all['Date'] >= pd.to_datetime('2014-01-01')) &
-    (IRH_all['Date'] < pd.to_datetime('2025-01-01'))
-]
-
-# Create extra time columns
 IRH_all['Year'] = IRH_all['Date'].dt.year
 IRH_all['Month'] = IRH_all['Date'].dt.month
 IRH_all['Day'] = IRH_all['Date'].dt.day
 
-# Handle potential errors in Time column
-def safe_time_parse(time_str):
-    try:
-        hours = int(time_str[:2])
-        minutes = int(time_str[3:5])
-        return hours + minutes / 60
-    except:
-        return np.nan
+# Create a more focused and clean visualization of crime trends
+# Focus on the key crime categories from the focuscrimes list
 
-IRH_all['HoursSinceMidnight'] = IRH_all['Time'].apply(safe_time_parse)
+# Get the data for the focus crime categories
+focus_crimes_data = IRH_all[IRH_all['Category'].isin(focuscrimes)]
 
-# Filter for focus crimes (or change focus crimes if desired)
-focus_data = IRH_all[IRH_all['Category'].isin(focuscrimes)]
+# Create a DataFrame with yearly counts for each focus crime category
+yearly_focus_crimes = focus_crimes_data.groupby(['Year', 'Category']).size().reset_index(name='Count')
 
-# ----------------------------------------------------------
-# VISUALIZATION 1: Time Distribution Plot (Matplotlib/Seaborn)
-# ----------------------------------------------------------
-plt.figure(figsize=(15, 8))
-ax = sns.violinplot(x='Category', y='HoursSinceMidnight', data=focus_data, 
-                    palette='Blues', inner='box', cut=0)
-plt.xticks(rotation=45, ha='right')
-plt.xlabel('Crime Type', fontsize=14)
-plt.ylabel('Time of Day (Hours)', fontsize=14)
-plt.title('Time Distribution of Different Crime Types in San Francisco', fontsize=18)
+# Get total crime count per year for normalization
+total_yearly_crimes = IRH_all.groupby('Year').size().reset_index(name='Total')
+yearly_focus_crimes = yearly_focus_crimes.merge(total_yearly_crimes, on='Year')
+yearly_focus_crimes['Percentage'] = (yearly_focus_crimes['Count'] / yearly_focus_crimes['Total'] * 100).round(2)
 
-# Format y-axis with AM/PM labels
-from matplotlib.ticker import FuncFormatter
+# Create a figure with subplots - one for each crime category
+fig = plt.figure(figsize=(14, 3.5*len(focuscrimes)))  # Increased height per subplot
+gs = fig.add_gridspec(len(focuscrimes), 1, hspace=0.6)  # Increased spacing between subplots
+axes = [fig.add_subplot(gs[i]) for i in range(len(focuscrimes))]
 
-def format_hours(x, pos):
-    hours = int(x)
-    minutes = int((x - hours) * 60)
-    if hours == 0:
-        return f"12:{minutes:02d} AM"
-    elif hours < 12:
-        return f"{hours}:{minutes:02d} AM"
-    elif hours == 12:
-        return f"{hours}:{minutes:02d} PM"
-    else:
-        return f"{hours-12}:{minutes:02d} PM"
+# Add main title with increased spacing
+fig.suptitle('Trends in Key Crime Categories in San Francisco (2003-2024)', 
+             fontsize=20, y=0.95)  # Increased y position
 
-ax.yaxis.set_major_formatter(FuncFormatter(format_hours))
-plt.yticks(np.arange(0, 24.1, 3))
-plt.grid(axis='y', linestyle='--', alpha=0.7)
+# Define a custom color palette
+colors = plt.cm.viridis(np.linspace(0, 1, len(focuscrimes)))
 
-# Annotate approximate peak times for each crime type (example values)
-crime_peaks = {
-    'VEHICLE BREAK-IN': 17,  # 5 PM
-    'ROBBERY': 20,           # 8 PM
-    'ASSAULT': 23,           # 11 PM
-    'DRUG/NARCOTIC': 14,     # 2 PM
-    'BICYCLE THEFT': 13      # 1 PM
-}
+# Create line plots for each crime category
 for i, crime in enumerate(focuscrimes):
-    if crime in crime_peaks:
-        peak_hour = crime_peaks[crime]
-        plt.annotate("Peak", xy=(i, peak_hour), xytext=(i+0.3, peak_hour),
-                     arrowprops=dict(arrowstyle='->'), fontsize=10)
+    crime_data = yearly_focus_crimes[yearly_focus_crimes['Category'] == crime]
+    
+    ax = axes[i]
+    line = ax.plot(crime_data['Year'], crime_data['Count'], marker='o', linewidth=2.5, 
+             color=colors[i], label=f'Total Incidents')
+    
+    ax.fill_between(crime_data['Year'], crime_data['Count'], alpha=0.2, color=colors[i])
+    
+    # Add percentage line on secondary axis
+    ax2 = ax.twinx()
+    percent_line = ax2.plot(crime_data['Year'], crime_data['Percentage'], marker='s', 
+                      linewidth=1.5, linestyle='--', color='#FF5733', 
+                      label='% of All Crimes')
+    
+    # Set y-axis labels and colors
+    ax.set_ylabel('Incidents', fontsize=11)
+    ax2.set_ylabel('% of All Crimes', color='#FF5733', fontsize=11)
+    ax2.tick_params(axis='y', colors='#FF5733')
+    ax2.set_ylim(bottom=0)
+    
+    # Combine legends
+    lines = line + percent_line
+    labels = [l.get_label() for l in lines]
+    ax.legend(lines, labels, loc='upper right', fontsize=9, bbox_to_anchor=(1, 1))
+    
+    # Add title
+    ax.set_title(f'{crime}', fontsize=14, pad=15)  # Increased padding
+    ax.grid(True, alpha=0.3)
+    
+    # Find and annotate peaks and valleys
+    # Find and annotate peaks and valleys
+    if len(crime_data) > 5:
+        peak_year = crime_data.loc[crime_data['Count'].idxmax()]
+        valley_year = crime_data.loc[crime_data['Count'].idxmin()]
+        
+        # Add peak annotation with adjusted position - special case for STOLEN PROPERTY
+        if crime == 'STOLEN PROPERTY':
+            ax.annotate(f"High: {int(peak_year['Count'])}",
+                       xy=(peak_year['Year'], peak_year['Count']),
+                       xytext=(15, -25),  # Changed to point downward
+                       textcoords="offset points",
+                       fontsize=9,
+                       ha='left',
+                       arrowprops=dict(arrowstyle="->", color='black', alpha=0.6, 
+                                     connectionstyle="arc3,rad=-0.2"),  # Changed arc direction
+                       bbox=dict(boxstyle="round,pad=0.3", fc="white", ec="gray", alpha=0.7))
+        else:
+            ax.annotate(f"High: {int(peak_year['Count'])}",
+                       xy=(peak_year['Year'], peak_year['Count']),
+                       xytext=(15, 25),
+                       textcoords="offset points",
+                       fontsize=9,
+                       ha='left',
+                       arrowprops=dict(arrowstyle="->", color='black', alpha=0.6, 
+                                     connectionstyle="arc3,rad=0.2"),
+                       bbox=dict(boxstyle="round,pad=0.3", fc="white", ec="gray", alpha=0.7))
+        
+        # Valley annotation remains the same
+        ax.annotate(f"Low: {int(valley_year['Count'])}",
+                   xy=(valley_year['Year'], valley_year['Count']),
+                   xytext=(-15, -25),
+                   textcoords="offset points",
+                   fontsize=9,
+                   ha='right',
+                   arrowprops=dict(arrowstyle="->", color='black', alpha=0.6, 
+                                 connectionstyle="arc3,rad=-0.2"),
+                   bbox=dict(boxstyle="round,pad=0.3", fc="white", ec="gray", alpha=0.7))
 
-plt.figtext(0.1, 0.01, "Source: SF Police Department Incident Reports (2014-2024)", 
-            fontsize=10, style='italic')
+# Set x-axis ticks and labels
+for ax in axes:
+    ax.set_xticks(sorted(yearly_focus_crimes['Year'].unique())[::2])
+    ax.set_xlabel("")
+
+# Add common x-axis label
+fig.text(0.5, 0.02, 'Year', ha='center', fontsize=14)
+
+# Adjust layout
 plt.tight_layout()
-plt.savefig('assets/images/sf_crime_time_distribution.png', dpi=300, bbox_inches='tight')
+fig.subplots_adjust(top=0.92)  # Adjust top margin
+
+# Save the figure
+plt.savefig('improved_crime_trends.png', dpi=300, bbox_inches='tight')
 plt.close()
-print("Time distribution visualization created!")
 
-# ----------------------------------------------------------
-# VISUALIZATION 2: Crime Heatmap (Folium)
-# ----------------------------------------------------------
-# Create a base map centered on San Francisco
-sf_map = folium.Map(location=[37.7749, -122.4194], zoom_start=12, 
-                    tiles='CartoDB positron')
+# Focus specifically on stolen property data instead of vehicle theft
+stolen_property_data = IRH_all[IRH_all['Category'] == 'STOLEN PROPERTY'].copy()
 
-# Define bounds to filter out outlier coordinates
-sf_bounds = {'lat_min': 37.70, 'lat_max': 37.84, 'lon_min': -122.52, 'lon_max': -122.35}
-valid_coords = IRH_all[
-    (IRH_all['Latitude'] >= sf_bounds['lat_min']) &
-    (IRH_all['Latitude'] <= sf_bounds['lat_max']) &
-    (IRH_all['Longitude'] >= sf_bounds['lon_min']) &
-    (IRH_all['Longitude'] <= sf_bounds['lon_max'])
-]
+# Clean the data - remove invalid coordinates
+stolen_property_data = stolen_property_data.dropna(subset=['Latitude', 'Longitude'])
 
-# Sample data for performance
-sample_size = min(20000, len(valid_coords))
-heat_data = valid_coords.sample(sample_size)[['Latitude', 'Longitude']].values.tolist()
+# Filter out obviously incorrect coordinates (should be in San Francisco area)
+sf_bounds = {
+    'lat_min': 37.70, 'lat_max': 37.85,
+    'lon_min': -122.52, 'lon_max': -122.35
+}
 
-# Update the gradient keys to strings to avoid the 'float' error
-gradient_dict = {"0.4": 'blue', "0.65": 'lime', "0.8": 'orange', "1": 'red'}
-
-# Add a heatmap layer with the modified gradient
-HeatMap(heat_data, radius=15, blur=10, max_zoom=13,
-        gradient=gradient_dict).add_to(sf_map)
-
-# Optional: add a title overlay (using HTML/CSS)
-title_html = '''
-<div style="position: fixed; 
-            top: 10px; left: 50px; width: 300px; height: 90px; 
-            background-color: white; border:2px solid grey; z-index:9999; padding: 10px;
-            font-size:16px; font-family: Arial, sans-serif;">
-    <h4 style="margin-top: 0;">San Francisco Crime Hotspots</h4>
-    <p style="font-size: 12px;">Color intensity indicates concentration of incidents.</p>
-</div>
-'''
-sf_map.get_root().html.add_child(folium.Element(title_html))
-
-# Save the map as an HTML file
-sf_map.save('assets/plots/sf_crime_heatmap.html')
-print("Crime heatmap created!")
-
-# ----------------------------------------------------------
-# VISUALIZATION 3: Hourly Crime Distribution (Bokeh Interactive)
-# ----------------------------------------------------------
-# Prepare data for hourly distribution plot
-hour_data = {'Hours': [str(h) for h in range(24)]}
-for crime in focuscrimes:
-    crime_data = IRH_all[IRH_all['Category'] == crime]
-    # Group by integer hour from HoursSinceMidnight
-    crime_hours = crime_data['HoursSinceMidnight'].dropna().apply(int)
-    hour_counts = crime_hours.value_counts().sort_index()
-    # Normalize counts
-    hour_normalized = hour_counts / hour_counts.sum()
-    full_hours = pd.Series(0, index=range(24))
-    for h, count in hour_normalized.items():
-        if 0 <= h < 24:
-            full_hours[h] = count
-    hour_data[crime] = full_hours.values
-
-source = ColumnDataSource(hour_data)
-hours = [str(h) for h in range(24)]
-p = figure(
-    title="Hourly Distribution of SF Crimes (2014-2024)",
-    x_range=FactorRange(factors=hours),
-    height=500, width=900,
-    toolbar_location="right",
-    tools="pan,wheel_zoom,box_zoom,reset,save",
-    x_axis_label="Hour of Day",
-    y_axis_label="Normalized Frequency"
+valid_coords = (
+    (stolen_property_data['Latitude'] >= sf_bounds['lat_min']) & 
+    (stolen_property_data['Latitude'] <= sf_bounds['lat_max']) & 
+    (stolen_property_data['Longitude'] >= sf_bounds['lon_min']) & 
+    (stolen_property_data['Longitude'] <= sf_bounds['lon_max'])
 )
 
-# Select colors for each crime category
-num_colors = len(focuscrimes)
-colors = palettes.Category10[10] if num_colors <= 10 else palettes.Category20[20][:num_colors]
+stolen_property_data = stolen_property_data[valid_coords]
 
-# Add bars for each crime category
-for i, crime in enumerate(focuscrimes):
-    p.vbar(x='Hours', top=crime, source=source, width=0.8, color=colors[i],
-           legend_label=crime, muted_alpha=0.2)
+# Ensure coordinates are float type
+stolen_property_data.loc[:,'Latitude'] = stolen_property_data['Latitude'].astype(float)
+stolen_property_data.loc[:,'Longitude'] = stolen_property_data['Longitude'].astype(float)
 
-# Add hover tool
-hover = HoverTool(tooltips=[("Hour", "@Hours:00")] +
-                  [(crime, f"@{crime}{{0:.2%}}") for crime in focuscrimes])
-p.add_tools(hover)
-p.legend.click_policy = "mute"
-p.legend.location = "top_right"
-p.legend.background_fill_alpha = 0.7
-p.grid.grid_line_color = "gray"
-p.grid.grid_line_alpha = 0.3
-p.y_range.start = 0
-p.yaxis.formatter.use_scientific = False
+# Update the base map settings
+stolen_property_map = folium.Map(
+    location=[37.7749, -122.4194],
+    zoom_start=12,
+    tiles='CartoDB dark_matter',
+    control_scale=True
+)
 
-# Example of adding time period labels (optional)
-time_periods = [
-    {"period": "Early Morning", "start": 5, "end": 8},
-    {"period": "Morning Rush", "start": 7, "end": 9},
-    {"period": "Business Hours", "start": 9, "end": 17},
-    {"period": "Evening Rush", "start": 17, "end": 19},
-    {"period": "Evening", "start": 19, "end": 22},
-    {"period": "Late Night", "start": 22, "end": 24}
-]
-for period in time_periods:
-    mid_hour = (period["start"] + period["end"]) // 2
-    label = Label(x=str(mid_hour), y=0.01, text=period["period"],
-                  text_font_size="8pt", text_color="gray", text_align="center", y_offset=-30)
-    p.add_layout(label)
+# Update the title
+title_html = '''
+<div style="position: fixed; 
+            top: 10px; left: 50%; transform: translateX(-50%);
+            z-index: 9999; font-size: 18px; font-weight: bold;
+            background-color: rgba(0, 0, 0, 0.7); color: white; 
+            border-radius: 5px; padding: 10px; text-align: center;
+            width: 400px;">
+    Stolen Property Incidents in San Francisco (2003-2024)
+</div>
+'''
+stolen_property_map.get_root().html.add_child(folium.Element(title_html))
 
-# Remove Bokeh logo from toolbar
-p.toolbar.logo = None
+# Update the legend
+legend_html = '''
+<div style="position: fixed; 
+            bottom: 50px; right: 50px;
+            z-index: 9999; font-size: 14px;
+            background-color: rgba(0, 0, 0, 0.7); color: white; 
+            border-radius: 5px; padding: 10px; text-align: left;">
+    <div style="margin-bottom: 5px;"><strong>Stolen Property Incidents</strong></div>
+    <div style="display: flex; align-items: center; margin-bottom: 5px;">
+        <div style="background: rgba(255, 0, 0, 0.8); width: 20px; height: 20px; margin-right: 5px;"></div>
+        <span>High Concentration</span>
+    </div>
+    <div style="display: flex; align-items: center; margin-bottom: 5px;">
+        <div style="background: rgba(255, 255, 0, 0.8); width: 20px; height: 20px; margin-right: 5px;"></div>
+        <span>Medium Concentration</span>
+    </div>
+    <div style="display: flex; align-items: center;">
+        <div style="background: rgba(0, 0, 255, 0.8); width: 20px; height: 20px; margin-right: 5px;"></div>
+        <span>Low Concentration</span>
+    </div>
+</div>
+'''
+stolen_property_map.get_root().html.add_child(folium.Element(legend_html))
 
-output_file("assets/plots/sf_crime_hourly_distribution.html")
-save(p)
-print("Interactive hourly distribution visualization created!")
-print("All visualizations completed successfully!")
+# Group data by year
+years = sorted(stolen_property_data['Year'].unique())
+
+# Prepare heatmap data with improved normalization
+heat_data = []
+max_incidents_per_location = 5  # Reduced threshold for better contrast
+min_incidents_for_display = 2
+
+for year in years:
+    year_data = stolen_property_data[stolen_property_data['Year'] == year]
+    
+    # Count incidents per location
+    location_counts = year_data.groupby(['Latitude', 'Longitude']).size().reset_index(name='count')
+    
+    # Filter and normalize
+    location_counts = location_counts[location_counts['count'] >= min_incidents_for_display]
+    location_counts['normalized_count'] = (location_counts['count']
+                                         .clip(upper=np.percentile(location_counts['count'], 95))
+                                         .rank(pct=True))
+    
+    year_points = []
+    for _, row in location_counts.iterrows():
+        weight = int(row['normalized_count'] * max_incidents_per_location)
+        if weight > 0:
+            year_points.extend([[row['Latitude'], row['Longitude']]] * weight)
+    
+    heat_data.append(year_points)
+
+# Create time index with incident counts
+time_index = []
+for year in years:
+    year_count = len(stolen_property_data[stolen_property_data['Year'] == year])
+    time_index.append([f"{year} ({year_count} incidents)"])
+
+# Update heatmap parameters
+heatmap_with_time = HeatMapWithTime(
+    heat_data,
+    index=time_index,
+    auto_play=True,
+    max_opacity=0.6,
+    radius=15,
+    gradient={
+        0.2: 'blue',
+        0.4: 'cyan',
+        0.6: 'yellow',
+        0.8: 'orange',
+        1.0: 'red'
+    },
+    min_opacity=0.1,
+    use_local_extrema=True
+)
+
+heatmap_with_time.add_to(stolen_property_map)
+
+# Add district markers
+districts = stolen_property_data.groupby('District')[['Latitude', 'Longitude']].mean().reset_index()
+
+for _, district in districts.iterrows():
+    folium.Marker(
+        location=[district['Latitude'], district['Longitude']],
+        popup=district['District'],
+        icon=folium.DivIcon(
+            icon_size=(150, 36),
+            icon_anchor=(75, 18),
+            html=f'<div style="font-size: 12pt; color: white; background-color: rgba(0, 0, 0, 0.6); padding: 5px; border-radius: 3px;">{district["District"]}</div>'
+        )
+    ).add_to(stolen_property_map)
+
+# Save the map
+stolen_property_map.save('sf_stolen_property_animation.html')
