@@ -6,7 +6,7 @@ categories: data-story
 ---
 
 ## Introduction  
-San Francisco's crime data from 2003 to 2024 offers a window into the city's shifting challenges. While many crime categories follow gradual trends, stolen property incidents experienced a remarkable surge between 2008 and 2013. This anomaly raises questions about underlying factors and how these patterns relate to where crimes are reported.
+San Francisco's crime data from 2003 to 2024 offers a window into the city's shifting challenges. In this we want to try to investigate the crime data from San Fransisco throughout the years, and see if we can find any interesting patterns or changes  we can talk about and see if it correlates with what we can find about San Fransisco on the internet.
 
 ---
 
@@ -14,11 +14,20 @@ San Francisco's crime data from 2003 to 2024 offers a window into the city's shi
 ![crimeoveryears](/assets/images/improved_crime_trends.png)  
 *Fig 1: Yearly trends for 10 major crime categories (solid line = count, dashed = % of total crimes)*  
 
-The time series analysis of 10 key crime categories reveals several important patterns:  
-- **Category Variation**: Each crime type follows its own trajectory. For instance, while overall trends for violent crimes and property offenses show gradual shifts, their rates of change differ considerably.  
-- **Percentage vs. Count**: The dual-axis presentation highlights that raw incident counts and their share of total crimes can tell different stories. Some categories, such as LARCENY/THEFT, maintain high counts but vary in relative importance over time.  
-- **Notable Peaks and Declines**: Many offenses reach their zenith between 2012 and 2015, followed by a decline in the post-2020 period.  
-- **Stolen Property Anomaly**: Among all categories, stolen property is distinct. Its count rises dramatically from 2008 to 2013—a surge that stands out against otherwise stable or declining trends. This raises intriguing questions: Could economic factors, reporting practices, or even emerging criminal networks have driven this increase? Such a deviation warrants deeper spatial analysis to see if these trends correspond with geographic patterns.
+The time series analysis of 10 key crime categories wherre we have the highest number of that crime done in the corresponding year and also the lowest year. Moreover we have also both the Total incidents and then also the percentages of total crimes. We can see multiple patterns and interesting things based on this plot for our focus crimes.
+- **Different Crime Categories, Different Patterns**  
+  While some crimes, like weapon laws, are pretty steady with some shifts, others, such as prostitution, rise and fall sharply due to social factors and changes in time. (reference)  
+
+- **Crime Numbers and % of total crimes**  
+  The total number of crimes can be misleading without context. **Assault**, for example, have very stable counts of incidents but % of all crimes still fluctates a bit. Which also gives an interesting view of both how many incidents there are and how much they constitute to the total amount of crimes throughout all the 10 focus crimes.
+
+- **Peaks**  
+  All Crimes except Stolen Property either peaks before 2010 or after 2016 which shows an indication that most crimes in San Francisco has happened in the early 2000's or closer till today based on this crime type we look at. The only crime that does not follow this pattern is Stolen Property which peaks right in the middle which is 2013 in this case.
+
+- **Investigation of Stolen Property**  
+  Also unlike other crimes, **stolen property reports raised to more than the double from 2008 to 2013**. This is very interesting since most of the other crimes are pretty steady or falling in this time area. So this we want to dig deeper into and try to understand and see more about the stolen property. This also leads to our Heatmap where we have made an Heatmap movie over the Stolen Property crime year by year in San Fransisco to get a better understanding of this.
+
+---
 
 ---
 
@@ -26,12 +35,12 @@ The time series analysis of 10 key crime categories reveals several important pa
 <iframe src="/assets/plots/sf_stolen_property_animation.html" width="100%" height="500px"></iframe>  
 *Fig 2: Geographic concentration of stolen property reports over time (darker = more reports)*  
 
-The animated heatmap offers a closer look at where stolen property incidents are most concentrated:  
-- **Unexpected Clusters**: While downtown areas naturally exhibit high activity, several neighborhoods not typically known for high crime rates show dense clusters of stolen property reports.  
-- **Temporal Shifts**: The hotspots evolve over time, with notable changes after 2013. This suggests that the surge observed in Fig 1 might be tied to specific local factors or transient criminal trends during that period.  
-- **Interpreting the Surge**: The spatial distribution hints at possible organized networks or shifts in local socioeconomic conditions influencing where stolen goods are reported. It’s possible that areas with rising pawn shop activity or relaxed enforcement may have inadvertently become hubs for these incidents.
+The heatmap video offers a closer look at where stolen property crimes are most concentrated and if the year has anything to do with in which part it happens:
+- **Clusters**: Whereas city centers understandably register high levels of activity which in this case are mostly Tenderloin, Sotuhern, Mission and Northern, several neighborhoods which are not necessarily expected to have high crime show close clusters of reports of missing property.
+- **What happens in around 2013**: Around 2013 the crimes clusters a lot more than before and almost all crimes this year is in one of the 4 areas mentioned before which is very interesting since this also is the year with most stolen properties. This shows that just because stolen properties are spread more out does not mean it correlates which how many stolen properties is happening the current year.
+- **What the Hotspots Tell Us**: The stolen property map shows these crimes cluster in specific areas rather than spreading evenly as also mentioned before. This suggests that there probably are organized operations or local factors like pawn shop density since a lot of the stolen properties appear the same places.
 
-Together, the time series in Fig 1 and the spatial analysis in Fig 2 build a compelling narrative: while most crime categories follow predictable patterns, the unique trajectory of stolen property calls for targeted investigation.
+Combined with the timeline chart, stolen property emerges as unique - while other crimes follow expected patterns, this category moves to its own rhythm than the rest of the crimes which is very interesting.
 
 ---
 
@@ -39,18 +48,15 @@ Together, the time series in Fig 1 and the spatial analysis in Fig 2 build a com
 <iframe src="/assets/plots/sf_crime_interactive_bokeh.html" width="100%" height="500px"></iframe>  
 *Fig 3: Explore hourly patterns by crime type and year (interactive).*  
 
-This interactive visualization allows you to dive into the temporal dynamics of crime on an hourly basis. Notable findings include:  
-- **Peak Activity**: For example, robberies consistently peak during late-night hours—an observation that aligns with trends reported in the SF Nightlife Economic Report 2023.  
-- **Crime Type Variations**: Different offenses show distinct temporal patterns, suggesting that factors like nightlife, public transportation schedules, and law enforcement shifts play a role in shaping when crimes occur.
+
 
 ---
 
 ## Conclusion  
 **Key takeaways:**  
-- **Distinct Temporal Trends**: While most crime categories show steady or declining trends over recent years, stolen property incidents experienced a dramatic surge from 2008 to 2013.  
-- **Spatial Insights**: The heatmap uncovers unexpected clusters of stolen property reports, hinting at localized factors such as organized criminal activity or shifts in socioeconomic conditions.  
-- **Temporal Dynamics**: Hourly analysis reveals that crime patterns are influenced by a mix of environmental and social factors, with certain offenses peaking at predictable times.  
-- **Implications for Policy and Future Research**: Understanding these patterns can guide targeted interventions. Further investigation using additional data sources—such as pawn shop records, economic indicators, or detailed enforcement actions—could provide deeper insights into the drivers behind these trends.
+Missing
 
 **Further reading:**  
+
+**References:**  
 
