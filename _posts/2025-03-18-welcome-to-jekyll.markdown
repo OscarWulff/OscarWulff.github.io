@@ -18,8 +18,6 @@ The plot in Figure 1 illustrates the distribution of vehicle theft incidents thr
 
 ---
 
----
-
 ## Vehicle Theft Hotspots  
 <iframe src="/assets/plots/sf_stolen_property_animation.html" width="100%" height="500px"></iframe>  
 *Fig 2: Geographic concentration of vehicle theft reports over time (darker = more reports)*  
@@ -28,8 +26,6 @@ The heatmap video offers a closer look at where vehicle crimes are most concentr
 - **Clusters**: Whereas city centers understandably register high levels of activity which in this case are all the big city centers, several neighborhoods which are not necessarily expected to have high crime show close clusters of reports of vehicle theft which shows that it happens in all areas of San Francisco.
 - **Changes throughout the years**: We can see that from 2005 to 2006 the incidents fall of a lot which also can be seen as there are a lot less hotspots on the map in 2006 and afterwards. The incidents falls from 18097 to 7263 which is a due to the anti theft for cars being improved a lot in those years, and moreover as the article says the police also gave anti theft devices in that year[1].
 - **What the Hotspots Tell Us**: The vehicle theft map shows these crimes cluster in specific areas rather than spreading evenly, as also mentioned before. This suggests that there are likely organized operations or local factors, like the proximity of car dealerships or high-traffic areas, since many of the stolen vehicles appear in the same locations.
-
-We can based on this conclude that there was a lot more vehicle theft back in the early 2000's and moreover we can also see that there are a lot of clustering in the city centres.
 
 ---
 
