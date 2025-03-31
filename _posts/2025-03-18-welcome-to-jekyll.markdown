@@ -29,19 +29,24 @@ The heatmap video offers a closer look at where vehicle crimes are most concentr
 
 ---
 
-## When Do Crimes Happen?  
-<iframe src="/assets/plots/sf_crime_interactive_bokeh.html" width="100%" height="500px"></iframe>  
-*Fig 3: Explore hourly patterns by crime type and year (interactive).*  
+## Lineplot for crimes per year
+<iframe src="/assets/plots/lineplot.html" width="100%" height="500px"></iframe>  
+*Fig 3: Lineplot*  
 
+The line plot above visualizes the annual trend in vehicle theft incidents from 2003 to 2024.
+
+- **2003-2005: Peak Years**  
+  Vehicle theft incidents were at their highest, in 2003-2005. This was also what we concluded based on the heatmap. This period aligns with a lack of strong anti-theft technology in cars and potentially weaker enforcement policies.
+  
+- **Crimes by District**  
+  We can also see throughout all the years that the crimes in the different district does not change that much but seems very steady. We can see that Tenderloin is the district with most vehicle thefts and Bayview is the district with least vehicle thefts.
+  
 
 
 ---
 
 ## Conclusion  
-**Key takeaways:**  
-Missing
 
-**Further reading:**  
 
 **References:**  
 1. https://eu.recordnet.com/story/news/crime/2007/04/25/vehicle-thefts-dropped-in-2006/52914690007/
