@@ -176,10 +176,10 @@ plt.savefig('improved_crime_trends.png', dpi=300, bbox_inches='tight')
 plt.close()
 
 # Focus specifically on stolen property data instead of vehicle theft
-stolen_property_data = IRH_all[IRH_all['Category'] == 'STOLEN PROPERTY'].copy()
+vehicle_theft_data = IRH_all[IRH_all['Category'] == 'VEHICLE THEFT'].copy()
 
 # Clean the data - remove invalid coordinates
-stolen_property_data = stolen_property_data.dropna(subset=['Latitude', 'Longitude'])
+vehicle_theft_data = vehicle_theft_data.dropna(subset=['Latitude', 'Longitude'])
 
 # Filter out obviously incorrect coordinates (should be in San Francisco area)
 sf_bounds = {
@@ -188,17 +188,17 @@ sf_bounds = {
 }
 
 valid_coords = (
-    (stolen_property_data['Latitude'] >= sf_bounds['lat_min']) & 
-    (stolen_property_data['Latitude'] <= sf_bounds['lat_max']) & 
-    (stolen_property_data['Longitude'] >= sf_bounds['lon_min']) & 
-    (stolen_property_data['Longitude'] <= sf_bounds['lon_max'])
+    (vehicle_theft_data['Latitude'] >= sf_bounds['lat_min']) & 
+    (vehicle_theft_data['Latitude'] <= sf_bounds['lat_max']) & 
+    (vehicle_theft_data['Longitude'] >= sf_bounds['lon_min']) & 
+    (vehicle_theft_data['Longitude'] <= sf_bounds['lon_max'])
 )
 
-stolen_property_data = stolen_property_data[valid_coords]
+vehicle_theft_data = vehicle_theft_data[valid_coords]
 
 # Ensure coordinates are float type
-stolen_property_data.loc[:,'Latitude'] = stolen_property_data['Latitude'].astype(float)
-stolen_property_data.loc[:,'Longitude'] = stolen_property_data['Longitude'].astype(float)
+vehicle_theft_data.loc[:,'Latitude'] = vehicle_theft_data['Latitude'].astype(float)
+vehicle_theft_data.loc[:,'Longitude'] = vehicle_theft_data['Longitude'].astype(float)
 
 # Update the base map settings
 stolen_property_map = folium.Map(
@@ -216,7 +216,7 @@ title_html = '''
             background-color: rgba(0, 0, 0, 0.7); color: white; 
             border-radius: 5px; padding: 10px; text-align: center;
             width: 400px;">
-    Stolen Property Incidents in San Francisco (2003-2024)
+    Vehicle Theft Incidents in San Francisco (2003-2024)
 </div>
 '''
 stolen_property_map.get_root().html.add_child(folium.Element(title_html))
@@ -228,7 +228,7 @@ legend_html = '''
             z-index: 9999; font-size: 14px;
             background-color: rgba(0, 0, 0, 0.7); color: white; 
             border-radius: 5px; padding: 10px; text-align: left;">
-    <div style="margin-bottom: 5px;"><strong>Stolen Property Incidents</strong></div>
+    <div style="margin-bottom: 5px;"><strong>Vehicle Theft Incidents</strong></div>
     <div style="display: flex; align-items: center; margin-bottom: 5px;">
         <div style="background: rgba(255, 0, 0, 0.8); width: 20px; height: 20px; margin-right: 5px;"></div>
         <span>High Concentration</span>
@@ -246,7 +246,7 @@ legend_html = '''
 stolen_property_map.get_root().html.add_child(folium.Element(legend_html))
 
 # Group data by year
-years = sorted(stolen_property_data['Year'].unique())
+years = sorted(vehicle_theft_data['Year'].unique())
 
 # Prepare heatmap data with improved normalization
 heat_data = []
@@ -254,7 +254,7 @@ max_incidents_per_location = 5  # Reduced threshold for better contrast
 min_incidents_for_display = 2
 
 for year in years:
-    year_data = stolen_property_data[stolen_property_data['Year'] == year]
+    year_data = vehicle_theft_data[vehicle_theft_data['Year'] == year]
     
     # Count incidents per location
     location_counts = year_data.groupby(['Latitude', 'Longitude']).size().reset_index(name='count')
@@ -276,7 +276,7 @@ for year in years:
 # Create time index with incident counts
 time_index = []
 for year in years:
-    year_count = len(stolen_property_data[stolen_property_data['Year'] == year])
+    year_count = len(vehicle_theft_data[vehicle_theft_data['Year'] == year])
     time_index.append([f"{year} ({year_count} incidents)"])
 
 # Update heatmap parameters
@@ -300,7 +300,7 @@ heatmap_with_time = HeatMapWithTime(
 heatmap_with_time.add_to(stolen_property_map)
 
 # Add district markers
-districts = stolen_property_data.groupby('District')[['Latitude', 'Longitude']].mean().reset_index()
+districts = vehicle_theft_data.groupby('District')[['Latitude', 'Longitude']].mean().reset_index()
 
 for _, district in districts.iterrows():
     folium.Marker(
