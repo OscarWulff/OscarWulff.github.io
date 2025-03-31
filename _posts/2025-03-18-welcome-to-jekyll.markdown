@@ -6,25 +6,15 @@ categories: data-story
 ---
 
 ## Introduction  
-San Francisco's crime data from 2003 to 2024 offers a window into the city's shifting challenges. In this we want to try to investigate the crime data from San Fransisco throughout the years, and see if we can find any interesting patterns or changes  we can talk about and see if it correlates with what we can find about San Fransisco on the internet.
+San Francisco's crime data from 2003 to 2024 offers a window into the city's shifting challenges. In this we want to try to investigate the Vechicle Theft incidents from San Fransisco throughout the years, and see if we can find any interesting patterns or changes. We would also like to investigate how it correlates with what information is available about San Fransisco on the internet.
 
 ---
 
 ## Diverging Crime Trends  
 ![crimeoveryears](/assets/images/improved_crime_trends.png)  
-*Fig 1: Yearly trends for 10 major crime categories (solid line = count, dashed = % of total crimes)*  
+***Figure 1**: The distribution of vehicle theft incidents throughout a 24-hour period.*  
 
-The time series analysis of 10 key crime categories wherre we have the highest number of that crime done in the corresponding year and also the lowest year. Moreover we have also both the Total incidents and then also the percentages of total crimes. We can see multiple patterns and interesting things based on this plot for our focus crimes.
-- **Different Crime Categories, Different Patterns**  
-  While some crimes, like weapon laws, are pretty steady with some shifts, others, such as prostitution, rise and fall a lot due to social factors and changes in time.
-- **Crime Numbers and % of total crimes**  
-  The total number of crimes can be misleading without context. **Assault**, for example, have very stable counts of incidents but % of all crimes still fluctates a bit. Which also gives an interesting view of both how many incidents there are and how much they constitute to the total amount of crimes throughout all the 10 focus crimes.
-
-- **Peaks**  
-  All Crimes except Stolen Property either peaks before 2010 or after 2016 which shows an indication that most crimes in San Francisco has happened in the early 2000's or closer till today based on this crime type we look at. The only crime that does not follow this pattern is Stolen Property which peaks right in the middle which is 2013 in this case.
-
-- **Investigation of Stolen Property**  
-  Also unlike other crimes, **stolen property reports raised to more than the double from 2008 to 2013**. This is very interesting since most of the other crimes are pretty steady or falling in this time area. So this we want to dig deeper into and try to understand and see more about the stolen property. This also leads to our Heatmap where we have made an Heatmap movie over the Stolen Property crime year by year in San Fransisco to get a better understanding of this.
+The plot in Figure 1 illustrates the distribution of vehicle theft incidents throughout a 24-hour period. Here darker and larger sections represent higher crime volumes opposed to smaller and lighter sections representing low volumes. There exist a clear evening/night concentration with peak vehicle theft hours occuring between 17:00-22:00, with 18:00 being the hour with the highest frequency. The maximal volume reach approximately 12,000-14,000 incidents at this peak hour. Between 01:00-07:00 the theft rates drops significantly which is probably due to most people are sleeping at this point. Throughout the day the number of thefts remains constant with a surprising peak at noon. Why this happens is difficult to determine (måske kilder kan forklar en mulig årsag) We hypothesize that the theft patterns can be explained by their alignment with darker evening hours when vehicles are often unattended for instance after work.
 
 ---
 
