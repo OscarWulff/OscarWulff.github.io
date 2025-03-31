@@ -74,7 +74,7 @@ IRH_all['Hours'] = IRH_all['Time'].str[:2].astype(int)
 # Set global plot styles
 #plt.style.use('dark_background')
 sns.set_context("talk")
-plt.rcParams['figure.figsize'] = (15, 20)
+plt.rcParams['figure.figsize'] = (25, 30)
 plt.rcParams['font.family'] = 'sans-serif'
 
 data = IRH_all[IRH_all['Category'] == focuscrime]
